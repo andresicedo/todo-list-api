@@ -77,7 +77,7 @@ app.patch("/api/todos/:id", (req, res) => {
       //get id from route
     const id = Number(req.params.id);
     //find where the todo exists in the todolist array
-    const todoIndex = todoList.find((currTodo) => currTodo.id === id ? true : false)
+    const todoIndex = todoList.find((currTodo) => currTodo.id === id)
     //update the object inside of the todo list array
     todoList[todoIndex].description = req.body.description
     //send back the updated todo item
@@ -89,6 +89,22 @@ app.patch("/api/todos/:id", (req, res) => {
   }
 })
 // DELETE /api/todos/:id
+app.delete("/api/todos/:id", (req, res) => {
+  //get id from route
+  const id = Number(req.params.id);
+  //find where the todo exists in the todolist array
+  const todoIndex = todoList.find((currTodo) => currTodo.id === id)
+  if(todoIndex !== -1) {
+    //remove it from array
+    todoList.splice(todoIndex, 1);
+    //respond with appropriate status/response
+    res.status(204).json();
+  } else {
+    res.status(404).json({ error: `Could not find todo with id: ${id}`})
+  }
+})
+
+
 
 app.listen(3000, function () {
   console.log('Todo List API is now listening on port 3000...');
