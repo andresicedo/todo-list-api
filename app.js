@@ -11,18 +11,22 @@ const todoList = [
   {
     id: 1,
     description: 'Implement a REST API',
+    completed: false,
   },
   {
     id: 2,
     description: 'Build a frontend',
+    completed: false,
   },
   {
     id: 3,
     description: '???',
+    completed: false,
   },
   {
     id: 4,
     description: 'Profit!',
+    completed: false,
   },
 ];
 
@@ -58,7 +62,8 @@ app.post("/api/todos", (req, res) => {
   if(req.body.description) {
     const newTodo = {
       id: nextId++,
-      description: req.body.description
+      description: req.body.description,
+      completed: false,
   } 
   todoList.push(newTodo);
   res.status(201);
@@ -73,13 +78,21 @@ app.post("/api/todos", (req, res) => {
 // PUT /api/todos/:id
 app.patch("/api/todos/:id", (req, res) => {
   //if req.body contains a description
-  if (req.body.description || req.body.description === "") {
+  if (req.body.description || req.body.description === "" || req.body.completed) {
       //get id from route
     const id = Number(req.params.id);
     //find where the todo exists in the todolist array
-    const todoIndex = todoList.find((currTodo) => currTodo.id === id)
+    const todoIndex = todoList.findIndex((currTodo) => currTodo.id === id)
     //update the object inside of the todo list array
-    todoList[todoIndex].description = req.body.description
+    if(req.body.description) {
+      todoList[todoIndex].description = req.body.description
+    }
+    if(req.body.completed === "true" || req.body.completed === true) {
+      todoList[todoIndex].completed = true
+    } else if (todoList[todoIndex].completed === "false" || req.body.completed === false){
+      todoList[todoIndex].completed = false
+    }
+     
     //send back the updated todo item
     res.json(todoList[todoIndex])
   } else {
@@ -93,7 +106,7 @@ app.delete("/api/todos/:id", (req, res) => {
   //get id from route
   const id = Number(req.params.id);
   //find where the todo exists in the todolist array
-  const todoIndex = todoList.find((currTodo) => currTodo.id === id)
+  const todoIndex = todoList.findIndex((currTodo) => currTodo.id === id)
   if(todoIndex !== -1) {
     //remove it from array
     todoList.splice(todoIndex, 1);
